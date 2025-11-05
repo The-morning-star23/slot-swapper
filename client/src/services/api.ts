@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // The base URL for our backend API
-const API_URL = 'http://localhost:5001/api';
+const API_URL = 'https://slotswapper-backend-pup9.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_URL,
