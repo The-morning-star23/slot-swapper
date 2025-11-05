@@ -21,7 +21,7 @@ Prerequisites
 
 1) Clone
 ```bash
-git clone https://github.com/<YourUsername>/SlotSwapper.git
+git clone https://github.com/The-morning-star23/slot-swapper.git
 cd SlotSwapper
 ```
 
