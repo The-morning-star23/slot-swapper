@@ -16,38 +16,40 @@ const PORT = process.env.PORT || 5001;
 
 // --- Database Connection ---
 const connectDB = async () => {
-  try {
-    // We add 'await' here to ensure the connection is established before proceeding
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('MongoDB Connected successfully.');
-  } catch (error) {
-    console.error(`Error connecting to MongoDB: ${error.message}`);
-    // Exit process with failure
-    process.exit(1);
-  }
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('MongoDB Connected successfully.');
+  } catch (error) {
+    console.error(`Error connecting to MongoDB: ${error.message}`);
+    process.exit(1);
+  }
 };
 
 // --- Middleware ---
 // Enable Cross-Origin Resource Sharing
-app.use(cors());
+const corsOptions = {
+  origin: 'https://slot-swapper-black.vercel.app/', // Your Vercel URL
+  optionsSuccessStatus: 200 // For preflight requests
+};
+
+app.use(cors(corsOptions));
+
 // Enable parsing of JSON request bodies
 app.use(express.json());
 
 // --- Simple Test Route ---
 app.get('/', (req, res) => {
-  res.send('SlotSwapper API is running...');
+  res.send('SlotSwapper API is running...');
 });
 
 // --- API Routes ---
-// This tells Express to use the authRoutes for any path starting with /api/auth
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/swaps', swapRoutes);
 
 // --- Start Server ---
-// We call connectDB and then start the server
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
 });
