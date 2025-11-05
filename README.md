@@ -1,94 +1,100 @@
-SlotSwapper
+# SlotSwapper
 
-SlotSwapper is a full-stack peer-to-peer time-slot scheduling application. Users can post their busy calendar slots as "swappable," browse a marketplace of other users' available slots, and request to swap one of their own slots for a desired one.
+## Overview
 
-This project was built as a full-stack technical challenge.
+SlotSwapper is a peer-to-peer time-slot scheduling application (ServiceHive Full Stack Intern challenge). Users can post busy calendar slots as "swappable" and trade them with others.
 
-🚀 Features
-User Authentication: Secure user registration and login using JWT (JSON Web Tokens).
+Key choices
+- Stack: MongoDB, Express, React, Node.js (MERN) with TypeScript.
+- Styling: Tailwind CSS.
+- State: React Context for auth + local component state.
+- API: RESTful endpoints; JWT Bearer tokens for auth.
+- UI updates by re-fetching after mutations (no WebSockets).
 
-Calendar Management: A personal dashboard where users can create, delete, and manage their calendar events.
+## Setup — Run Locally (Windows)
 
-Swappable Status: Users can mark their events as "BUSY" or "SWAPPABLE."
-
-Slot Marketplace: A view that displays all "SWAPPABLE" slots from other users.
-
-Swap Request System: Users can request a swap by offering one of their own swappable slots.
-
-Request Management: A dedicated page to view incoming and outgoing swap requests.
-
-Accept/Reject Logic: Users can accept or reject incoming swap requests. An accepted swap atomically exchanges the ownership of the two events.
-
-🛠️ Tech Stack
-Frontend: React with TypeScript (built with Vite)
-
-Backend: Node.js with Express.js
-
-Database: MongoDB (with Mongoose)
-
-Styling: Tailwind CSS
-
-Authentication: JWT (jsonwebtoken) & bcrypt.js
-
-Routing: React Router DOM
-
-🏁 Getting Started
 Prerequisites
-Node.js (v18 or later)
+- Node.js v18+
+- npm
+- Git
+- MongoDB Atlas (or local MongoDB)
 
-npm
-
-A free MongoDB Atlas account (or a local MongoDB instance)
-
-1. Clone the Repository
-Bash
-
-git clone <your-repository-url>
+1) Clone
+```bash
+git clone https://github.com/<YourUsername>/SlotSwapper.git
 cd SlotSwapper
-2. Backend Setup (/server)
-Navigate to the server directory:
+```
 
-Bash
-
+2) Backend (server)
+```bash
 cd server
-Install dependencies:
-
-Bash
-
 npm install
-Create a .env file in the /server directory and add your environment variables.
+```
 
-Code snippet
+Create a `.env` in the server folder with:
+```
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_super_strong_secret_key
+```
+Create `.env` (Windows):
+- PowerShell: `New-Item .env -ItemType File`
+- CMD: `type nul > .env`
+- Or create the file in your editor.
 
-# Your MongoDB connection string
-MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/SlotSwapper?retryWrites=true&w=majority
-
-# A random, strong secret for JWT
-JWT_SECRET=your-super-secret-key
-Start the backend server:
-
-Bash
-
+Start the backend:
+```bash
 npm start
-The server will be running on http://localhost:5001.
+```
+Default: http://localhost:5001 (confirm in server start logs).
 
-3. Frontend Setup (/client)
-Open a new terminal and navigate to the client directory:
-
-Bash
-
+3) Frontend (client)
+Open a new terminal:
+```bash
 cd client
-Install dependencies:
-
-Bash
-
 npm install
-Start the frontend development server:
-
-Bash
-
 npm run dev
-Open your browser and navigate to http://localhost:5173 (or the port shown in your terminal).
+```
+Typical dev URL: http://localhost:5173
 
-You can now register a new user and start using the application!
+4) Testing notes
+To test swaps, use two distinct browser sessions (different browsers or an incognito window) to log in as two different users.
 
+## API Endpoints (protected routes require `Authorization: Bearer <token>`)
+
+Auth (`/api/auth`)
+| Method | Endpoint   | Description                  | Access |
+|--------|------------|------------------------------|--------|
+| POST   | /register  | Register a new user          | Public |
+| POST   | /login     | Log in and receive a JWT     | Public |
+
+Events (`/api/events`)
+| Method | Endpoint         | Description                                      | Access  |
+|--------|------------------|--------------------------------------------------|---------|
+| POST   | /                | Create a new event                               | Private |
+| GET    | /my-events       | Get all events for the logged-in user            | Private |
+| PUT    | /:id/status      | Update an event's status (e.g., BUSY, SWAPPABLE) | Private |
+| DELETE | /:id             | Delete an event                                  | Private |
+
+Swaps (`/api/swaps`)
+| Method | Endpoint               | Description                                               | Access  |
+|--------|------------------------|-----------------------------------------------------------|---------|
+| GET    | /swappable-slots       | Get all SWAPPABLE slots from other users                  | Private |
+| POST   | /request               | Create a new swap request                                 | Private |
+| GET    | /my-requests           | Get incoming and outgoing requests for the user           | Private |
+| POST   | /response/:requestId   | Accept or reject an incoming swap request                 | Private |
+
+## Assumptions & Challenges
+
+Assumptions
+- No real-time updates (no WebSockets). UI re-fetches after actions; incoming requests appear after navigating/refreshing.
+- Simple calendar: list view rather than full grid.
+- Minimal user info shared (name only).
+
+Challenges
+- Atomic swap logic: swapping owners and statuses for two events must be consistent; handled in controller by updating both documents in a single flow before saving.
+- Testing requires two user sessions.
+
+If you want, I can also:
+- Fix any typos or wording further.
+- Add example requests (curl) for each endpoint.
+- Generate a CONTRIBUTING or ENV example file.
