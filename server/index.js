@@ -26,9 +26,9 @@ const connectDB = async () => {
 };
 
 // --- Middleware ---
-// Enable Cross-Origin Resource Sharing
 const corsOptions = {
-  origin: 'https://slot-swapper-black.vercel.app/', // Your Vercel URL
+  // FIX 1: Removed the trailing slash
+  origin: 'https://slot-swapper-black.vercel.app', 
   optionsSuccessStatus: 200 // For preflight requests
 };
 
@@ -50,6 +50,7 @@ app.use('/api/swaps', swapRoutes);
 // --- Start Server ---
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    // FIX 2: Cleaned up the log message
+    console.log(`Server is running on port ${PORT}`);
   });
 });
